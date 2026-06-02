@@ -46,6 +46,34 @@ def apply_filters(items: list, warehouse: Optional[str] = None, category: Option
 
     return filtered
 
+def calculate_inventory_health(items: list) -> dict:
+    """Calculate overall inventory health metrics"""
+    if not items:
+        return {'healthy': 0, 'low_stock': 0, 'critical': 0, 'total': 0}
+    
+    healthy = 0
+    low_stock = 0
+    critical = 0
+    
+    for item in items:
+        qty = item.get('quantity_on_hand', 0)
+        reorder = item.get('reorder_point', 0)
+        
+        if qty == 0:
+            critical += 1
+        elif qty < reorder:
+            low_stock += 1
+        else:
+            healthy += 1
+    
+    return {
+        'healthy': healthy,
+        'low_stock': low_stock,
+        'critical': critical,
+        'total': len(items),
+        'health_percentage': round((healthy / len(items) * 100), 1) if items else 0
+    }
+
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,

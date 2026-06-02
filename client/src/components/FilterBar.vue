@@ -72,6 +72,7 @@
 <script>
 import { useFilters } from '../composables/useFilters'
 import { useI18n } from '../composables/useI18n'
+import { ref, computed } from 'vue'
 
 export default {
   name: 'FilterBar',
@@ -86,6 +87,17 @@ export default {
     } = useFilters()
 
     const { t } = useI18n()
+    
+    // New feature: search functionality
+    const searchQuery = ref('')
+    
+    const hasSearchQuery = computed(() => {
+      return searchQuery.value.trim().length > 0
+    })
+    
+    const clearSearch = () => {
+      searchQuery.value = ''
+    }
 
     return {
       t,
@@ -94,7 +106,10 @@ export default {
       selectedCategory,
       selectedStatus,
       hasActiveFilters,
-      resetFilters
+      resetFilters,
+      searchQuery,
+      hasSearchQuery,
+      clearSearch
     }
   }
 }

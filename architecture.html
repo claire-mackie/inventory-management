@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inventory Management Architecture</title>
+  <style>
+    body {
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #f5f7fb;
+      color: #1f2937;
+      margin: 0;
+      padding: 0;
+    }
+    .page {
+      max-width: 960px;
+      margin: 2rem auto;
+      padding: 2rem;
+      background: white;
+      border-radius: 18px;
+      box-shadow: 0 20px 80px rgba(15, 23, 42, 0.08);
+    }
+    h1, h2, h3 {
+      color: #111827;
+      margin-bottom: 0.75rem;
+    }
+    p {
+      line-height: 1.75;
+      margin-bottom: 1rem;
+    }
+    .section {
+      margin-bottom: 2rem;
+    }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .card {
+      background: #f8fafc;
+      padding: 1.25rem;
+      border-radius: 14px;
+      border: 1px solid #e5e7eb;
+    }
+    .card h3 {
+      margin-top: 0;
+      margin-bottom: 0.75rem;
+      font-size: 1.05rem;
+    }
+    .card ul {
+      padding-left: 1.2rem;
+      margin: 0;
+      list-style-type: disc;
+    }
+    .code-block {
+      background: #111827;
+      color: #f8fafc;
+      padding: 1rem;
+      border-radius: 12px;
+      overflow-x: auto;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.95rem;
+      margin-top: 1rem;
+    }
+    .diagram {
+      margin: 1rem 0;
+      padding: 1.2rem;
+      background: #eff6ff;
+      border-radius: 14px;
+      border: 1px solid #c7d2fe;
+      white-space: pre-wrap;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+    footer {
+      text-align: center;
+      color: #6b7280;
+      font-size: 0.95rem;
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <h1>Inventory Management System Architecture</h1>
+    <p>This page describes the architecture, tech stack, and data flow for the inventory management demo project.</p>
+
+    <div class="section">
+      <h2>System Architecture</h2>
+      <div class="diagram">
+        Frontend (Vue 3 + Vite)
+                |
+                v
+        API Client (axios)
+                |
+                v
+        Backend (FastAPI)
+                |
+                v
+        In-memory Mock Data
+        (server/data/*.json loaded by server/mock_data.py)
+      </div>
+      <p>The frontend runs independently on port <strong>3000</strong> and communicates with the backend API on port <strong>8001</strong>. CORS is enabled for development, allowing the client to fetch JSON data from the backend.</p>
+    </div>
+
+    <div class="section">
+      <h2>Tech Stack</h2>
+      <div class="cards">
+        <div class="card">
+          <h3>Frontend</h3>
+          <ul>
+            <li>Vue 3 + Composition API</li>
+            <li>Vite development server</li>
+            <li>Vue Router for page navigation</li>
+            <li>Axios for backend HTTP requests</li>
+            <li>Modular components and composables</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Backend</h3>
+          <ul>
+            <li>Python FastAPI web framework</li>
+            <li>Pydantic models for validation</li>
+            <li>Uvicorn application server</li>
+            <li>CORS middleware enabled</li>
+            <li>In-memory data loaded from JSON files</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Data & Runtime</h3>
+          <ul>
+            <li>Mock data stored in <code>server/data/*.json</code></li>
+            <li>Data loaded by <code>server/mock_data.py</code></li>
+            <li>No persistent database in this demo</li>
+            <li>Client API base URL: <code>http://localhost:8001/api</code></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Data Flow</h2>
+      <p>Users interact with the UI, which updates filters and triggers API calls from the frontend to the backend.</p>
+      <div class="diagram">
+        Browser UI (Vue views)
+                |
+                v
+        API client in <code>client/src/api.js</code>
+                |
+                v
+        HTTP GET requests to backend endpoints
+                |
+                v
+        FastAPI endpoints in <code>server/main.py</code>
+                |
+                v
+        Filtered data from JSON mock files
+                |
+                v
+        JSON response sent back to frontend
+      </div>
+      <p>Filtering parameters include <code>warehouse</code>, <code>category</code>, <code>status</code>, and <code>month</code>. The same query parameters are reused across inventory, orders, dashboard summary, and reporting endpoints.</p>
+    </div>
+
+    <div class="section">
+      <h2>Key Entry Points</h2>
+      <div class="cards">
+        <div class="card">
+          <h3>Frontend</h3>
+          <ul>
+            <li><code>client/src/main.js</code> - app bootstrap and router</li>
+            <li><code>client/src/App.vue</code> - global layout, filter bar, modals</li>
+            <li><code>client/src/api.js</code> - backend API client</li>
+            <li><code>client/src/views/*.vue</code> - page views for dashboard, inventory, orders, spending, demand, reports</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Backend</h3>
+          <ul>
+            <li><code>server/main.py</code> - FastAPI application and endpoints</li>
+            <li><code>server/mock_data.py</code> - data loading from JSON files</li>
+            <li><code>server/data/*.json</code> - mock inventory, orders, spending, demand, backlog data</li>
+            <li><code>server/requirements.txt</code> - Python dependencies</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Development Workflow</h2>
+      <div class="code-block">
+        # Start backend
+        cd server
+        python3 main.py
+
+        # Start frontend
+        cd client
+        npm install
+        npm run dev
+      </div>
+      <p>Frontend development occurs in the browser at <strong>http://localhost:3000</strong>, while backend API development is available at <strong>http://localhost:8001</strong>. The API docs are reachable at <strong>http://localhost:8001/docs</strong>.</p>
+    </div>
+
+    <footer>Generated architecture summary for the Inventory Management project.</footer>
+  </div>
+</body>
+</html>
