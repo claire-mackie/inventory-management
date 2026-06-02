@@ -22,6 +22,7 @@ Use the Task tool with these specialized subagents for appropriate tasks:
   - Exception: Local branches only - use `git checkout -b` instead of `mcp__github__create_branch`
 - **ALWAYS use Playwright MCP tools** (`mcp__playwright__*`) for browser testing
   - Test against: `http://localhost:3000` (frontend), `http://localhost:8001` (API)
+- Always document non-obvious logic changes with comments to make reasoning visible and maintainable
 
 ## Stack
 - **Frontend**: Vue 3 + Composition API + Vite (port 3000)
@@ -72,3 +73,13 @@ npm install && npm run dev
 - Status: green/blue/yellow/red
 - Charts: Custom SVG, CSS Grid for layouts
 - No emojis in UI
+
+## GitHub Integration
+
+### Automated Claude Code Reviews
+GitHub Action workflow automatically reviews PRs using Claude API:
+- **Trigger:** Every PR open/update
+- **Reviews:** Python, Vue, JavaScript, TypeScript, JSON files
+- **Setup:** See [CLAUDE_CODE_REVIEW_SETUP.md](docs/CLAUDE_CODE_REVIEW_SETUP.md)
+- **Requirements:** Add `ANTHROPIC_API_KEY` secret to repo settings
+- **Cost:** ~$0.01 per PR review
